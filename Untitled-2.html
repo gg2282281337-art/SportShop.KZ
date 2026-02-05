@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>SportShop — интернет-магазин спортивного оборудования</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background-image:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438");
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+}
+
+.overlay{
+  background:rgba(0,0,0,0.6);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding-top:80px;
+  position:relative;
+}
+
+.cabinet-btn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:#007bff;
+  color:white;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.ai-btn{
+  position:absolute;
+  top:20px;
+  right:160px;
+  background:#ff9800;
+  color:white;
+  border:none;
+  padding:10px 15px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-content{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  width:300px;
+  text-align:center;
+}
+
+input{
+  width:90%;
+  padding:8px;
+  margin:5px 0;
+}
+
+button{
+  padding:8px 12px;
+  margin-top:10px;
+  border:none;
+  border-radius:6px;
+  background:#28a745;
+  color:white;
+  cursor:pointer;
+}
+
+.title{
+  color:white;
+  font-size:48px;
+  text-align:center;
+}
+
+.subtitle{
+  color:white;
+  font-size:22px;
+  text-align:center;
+  margin-top:10px;
+}
+
+.sections{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:30px;
+  gap:15px;
+}
+
+.section-card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  width:180px;
+  cursor:pointer;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  transition:transform 0.2s;
+}
+
+.section-card:hover{
+  transform:scale(1.05);
+}
+
+.section-card img{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+}
+
+.section-card h4{
+  margin:10px 0;
+}
+
+.products{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:20px;
+  gap:15px;
+  width:100%;
+}
+
+.product-card{
+  background:white;
+  border-radius:10px;
+  padding:10px;
+  width:180px;
+  text-align:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+
+.product-card img{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  margin-bottom:5px;
+}
+
+/* Нижнее меню */
+.footer{
+  margin-top:30px;
+  display:flex;
+  justify-content:center;
+  gap:40px;
+}
+
+.footer button{
+  background:#555;
+  color:white;
+  padding:8px 15px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.info-section{
+  display:none;
+  background:rgba(255,255,255,0.9);
+  padding:15px;
+  border-radius:10px;
+  margin-top:20px;
+  max-width:600px;
+  text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<button class="ai-btn" onclick="openAI()">AI консультант</button>
+<button class="cabinet-btn" onclick="openCabinet()">Личный кабинет</button>
+
+<div>
+  <div class="title">SportShop</div>
+  <div class="subtitle">
+    Интернет-магазин спортивного оборудования
+  </div>
+</div>
+
+<div class="sections">
+  <div class="section-card" onclick="loadCategory('fitness')">
+    <img src="https://images.unsplash.com/photo-1599058917765-a780eda07a3e" alt="Фитнес">
+    <h4>Фитнес</h4>
+  </div>
+  <div class="section-card" onclick="loadCategory('football')">
+    <img src="https://avatars.mds.yandex.net/i?id=bccb7a3c8242155cafb57f67bd5ec42b48018fbc-4571306-images-thumbs&n=13" alt="Футбол">
+    <h4>Футбол</h4>
+  </div>
+  <div class="section-card" onclick="loadCategory('basketball')">
+    <img src="https://images.unsplash.com/photo-1519861531473-9200262188bf" alt="Баскетбол">
+    <h4>Баскетбол</h4>
+  </div>
+  <div class="section-card" onclick="loadCategory('tennis')">
+    <img src="https://media.istockphoto.com/id/1530271787/ru/фото/теннисист-подает-теннисный-мяч-во-время-матча-на-открытом-корте-концепция-спорта-фитнеса.jpg?s=612x612&w=0&k=20&c=iRAxk334jvUyGDK7cP6kTQ_5ZT7PwfHiAGTwYfnug-o=" alt="Теннис">
+    <h4>Теннис</h4>
+  </div>
+</div>
+
+<div class="products" id="products"></div>
+
+<!-- кабинет -->
+<div class="modal" id="cabinetModal">
+<div class="modal-content">
+<h3>Регистрация</h3>
+<input id="username" placeholder="Имя пользователя">
+<input id="password" type="password" placeholder="Пароль">
+<button onclick="registerUser()">Зарегистрироваться</button>
+<br><br>
+<button onclick="closeCabinet()">Закрыть</button>
+</div>
+</div>
+
+<!-- AI окно -->
+<div class="modal" id="aiModal">
+<div class="modal-content">
+<h3>AI консультант</h3>
+<input id="aiInput" placeholder="Например: что нужно для футбола">
+<button onclick="askAI()">Спросить</button>
+<p id="aiAnswer"></p>
+<button onclick="closeAI()">Закрыть</button>
+</div>
+</div>
+
+<!-- окно оплаты -->
+<div class="modal" id="paymentModal">
+<div class="modal-content">
+<h3>Оплата Kaspi</h3>
+<input id="cardNumber" placeholder="Номер карты">
+<input id="cvv" placeholder="CVV">
+<input id="expiry" placeholder="Срок действия (MM/YY)">
+<button onclick="payKaspi()">Оплатить</button>
+<br><br>
+<button onclick="closePayment()">Закрыть</button>
+</div>
+</div>
+
+<!-- нижнее меню -->
+<div class="footer">
+  <button onclick="toggleInfo('about')">О нас</button>
+  <button onclick="toggleInfo('contacts')">Контакты</button>
+</div>
+
+<div class="info-section" id="about">
+<p>Мы — ваш надежный партнер в мире спорта и активного образа жизни. Наша компания предлагает широкий ассортимент спортивного оборудования, подходящего как для профессиональных спортсменов, так и для любителей. Мы стремимся предоставлять только качественные и безопасные товары, которые помогут вам достигать новых вершин в ваших спортивных достижениях.</p>
+</div>
+
+<div class="info-section" id="contacts">
+<p>Название компании: "Sport Shop KZ" - фитнес тренажеры, мячи, аксесуары, форма </p>
+<p>Адрес: Толе Би 100 </p>
+<p>Контактное лицо: Лукьянов Глеб</p>
+<p>Телефон: +7 777 777 7777</p>
+<p>Email: Sport Shop.KZ@gmai.com </p>
+<p>Сайт компании: </p>
+<p>Telegram: @SportikShop</p>
+<p>WhatsApp: +7 228 123 5252</p>
+</div>
+
+<script>
+/* Личный кабинет */
+function openCabinet(){ document.getElementById("cabinetModal").style.display="flex"; }
+function closeCabinet(){ document.getElementById("cabinetModal").style.display="none"; }
+function registerUser(){
+  const name=document.getElementById("username").value;
+  const pass=document.getElementById("password").value;
+  if(name==""||pass==""){ alert("Заполните все поля"); return; }
+  localStorage.setItem("user",name);
+  alert("Регистрация успешна");
+  closeCabinet();
+}
+
+/* AI */ 
+function openAI(){ document.getElementById("aiModal").style.display="flex"; }
+function closeAI(){ document.getElementById("aiModal").style.display="none"; }
+function askAI(){
+  const text=document.getElementById("aiInput").value.toLowerCase();
+  let answer="Не понял запрос.";
+  if(text.includes("футбол")) answer="Для футбола: мяч, бутсы, форма, гетры.";
+  else if(text.includes("фитнес")) answer="Для фитнеса: гантели, штанги, тренажеры.";
+  else if(text.includes("баскетбол")) answer="Для баскетбола: мяч, кольцо, обувь.";
+  else if(text.includes("теннис")) answer="Для тенниса: ракетки, форма, мячи.";
+  document.getElementById("aiAnswer").innerText=answer;
+}
+
+/* Каталог товаров */
+const productsData=[
+  {cat:"fitness",name:"Беговая дорожка",img:"https://avatars.mds.yandex.net/i?id=2cb8de3899cc0a52f2885718245fdf62e5576c30-9225702-images-thumbs&n=13"},
+  {cat:"fitness",name:"Гантели",img:"https://avatars.mds.yandex.net/i?id=44b4196c35d487caa9f307133f15a6f5c1740904-4526725-images-thumbs&n=13"},
+  {cat:"fitness",name:"Скамейка",img:"https://sc04.alicdn.com/kf/Hc9ade389a76d47bbb3ad17da1179569fP/Dumbbell-Bench-Weight-Benches-Adjustable-Flat-Bench-Gym.jpg"},
+  {cat:"fitness",name:"Штанга",img:"https://avatars.mds.yandex.net/i?id=55fee1bb9ddf57b0b836a4ffe2ec1da0e2594273-12942752-images-thumbs&n=13"},
+  {cat:"fitness",name:"Блины",img:"https://avatars.mds.yandex.net/i?id=1972a0162671410dfba53c2f0da1298e2e9f5852-5210468-images-thumbs&n=13"},
+  {cat:"fitness",name:"Тренажер",img:"https://avatars.mds.yandex.net/i?id=d0381c024a839d85cc02e635a7c3c736ac9b6515-12424074-images-thumbs&n=13"},
+  {cat:"football",name:"Футбольный мяч",img:"https://avatars.mds.yandex.net/i?id=e4bb0ed6f83d29bc6b74a84361b98af512fb4c5a-5468312-images-thumbs&n=13"},
+  {cat:"football",name:"Гетры",img:"https://avatars.mds.yandex.net/i?id=07537b3a789c7211c6277f2f49d53ea5438dfc4f-5482493-images-thumbs&n=13"},
+  {cat:"football",name:"Бутсы",img:"https://avatars.mds.yandex.net/i?id=38e3bebb8602173e95c291d36f4857e0e03bf026-2816701-images-thumbs&n=13"},
+  {cat:"football",name:"Форма",img:"https://avatars.mds.yandex.net/i?id=c3f70eadc1fe71ea24071f125dc8930253a9ccf7-5234536-images-thumbs&n=13"},
+  {cat:"football",name:"Перчатки",img:"https://avatars.mds.yandex.net/i?id=a7957cd4d07640d7831d3af81217ed2ccac1a85d-16435628-images-thumbs&n=13"},
+  {cat:"football",name:"Ворота",img:"https://avatars.mds.yandex.net/i?id=9eed369f923c4e02ee40d6d603c82e8900935840-4821166-images-thumbs&n=13"},
+  {cat:"football",name:"Газон",img:"https://avatars.mds.yandex.net/i?id=21275bdadf33a431fa34948db3a4cb890ee445b5-3986788-images-thumbs&n=13"},
+  {cat:"basketball",name:"Баскетбольный мяч",img:"https://avatars.mds.yandex.net/i?id=6c0526d4b88cc0a12a9fa3c499219697f7be8bcd-9858868-images-thumbs&n=13"},
+  {cat:"basketball",name:"Обувь",img:"https://avatars.mds.yandex.net/i?id=1f416e02f228aa49779bf01d1f6128577e9fcf41-9215651-images-thumbs&n=13"},
+  {cat:"basketball",name:"Кольцо",img:"https://avatars.mds.yandex.net/i?id=7670c82e2b6212bc20e53e046e7719e3ef93f393-12941205-images-thumbs&n=13"},
+  {cat:"tennis",name:"Ракетка",img:"https://avatars.mds.yandex.net/i?id=7afd0557832314e13e554e18f08e9cbe247f818a-5273210-images-thumbs&n=13"},
+  {cat:"tennis",name:"Теннисная форма",img:"https://avatars.mds.yandex.net/i?id=47febd4ee789baa1533bf72785019a6da79fbfd5-2466270-images-thumbs&n=13"},
+  {cat:"tennis",name:"Теннисный мяч",img:"https://avatars.mds.yandex.net/i?id=cf61d185301a7e8b7a829b080539e304d44e0b34-4944743-images-thumbs&n=13"}
+];
+
+/* Отображение товаров с кнопкой Купить */
+function loadCategory(cat){
+  const container=document.getElementById("products");
+  container.innerHTML="";
+  productsData.filter(p=>p.cat===cat).forEach(p=>{
+    container.innerHTML+=`
+    <div class="product-card">
+      <img src="${p.img}" alt="${p.name}">
+      <h4>${p.name}</h4>
+      <button onclick="openPayment('${p.name}')">Купить</button>
+    </div>`;
+  });
+}
+
+/* Оплата Kaspi */
+function openPayment(productName){
+  document.getElementById("paymentModal").style.display="flex";
+  document.getElementById("paymentModal").setAttribute("data-product", productName);
+}
+function closePayment(){
+  document.getElementById("paymentModal").style.display="none";
+  document.getElementById("cardNumber").value="";
+  document.getElementById("cvv").value="";
+  document.getElementById("expiry").value="";
+}
+function payKaspi(){
+  const card=document.getElementById("cardNumber").value;
+  const cvv=document.getElementById("cvv").value;
+  const expiry=document.getElementById("expiry").value;
+  if(!card || !cvv || !expiry){
+    alert("Заполните все поля!");
+    return;
+  }
+  alert("Оплата прошла успешно для товара: "+document.getElementById("paymentModal").getAttribute("data-product"));
+  closePayment();
+}
+
+/* Нижнее меню: О нас / Контакты как переключатели */
+function toggleInfo(section){
+  const about = document.getElementById("about");
+  const contacts = document.getElementById("contacts");
+
+  if(section === 'about'){
+    about.style.display = (about.style.display === 'block') ? 'none' : 'block';
+    contacts.style.display = 'none';
+  } else if(section === 'contacts'){
+    contacts.style.display = (contacts.style.display === 'block') ? 'none' : 'block';
+    about.style.display = 'none';
+  }
+}
+</script>
+
+</body>
+</html>
+
